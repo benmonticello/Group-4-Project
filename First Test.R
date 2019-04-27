@@ -84,3 +84,132 @@ cols <- c("Boston" = "orangered2",
 names <- c("Boston"="Boston, MA", "Chicago"= "Chicago, IL", 
            "Plano"= "Plano, TX" , "Arlington" = "Arlington, VA", 
            "Estero"= "Estero, FL", "US"= "U.S. Average")
+
+
+### EVERYTHING BELOW IS THE ACTUAL SHINY APP
+
+# Defining the User Interface:
+
+ui <- fluidPage( 
+  titlePanel("Corporate Relocation and Housing Prices"), #The title shown at the top of the app
+  
+  fluidRow(
+    column(3,
+           column(7, 
+                  fluidRow(
+                    checkboxGroupInput("cityinput", "Housing Markets:", 
+                                       c("Boston"="Boston", "Plano"="Plano", 
+                                         "Estero"="Estero", "Chicago"="Chicago",
+                                         "Arlington"="Arlington", "U.S. Average"="US" ),
+                                       selected = c("Boston"="Boston", "Plano"="Plano", 
+                                                    "Estero"="Estero", "Chicago"="Chicago",
+                                                    "Arlington"="Arlington", "U.S. Average"="US" )
+                    )
+                  ),
+                  
+                  #This part is the slider to change the years shown (altering the x-axis):
+                  fluidRow(
+                    sliderInput("yearrange", "Year Range:", min=1996, max=2018, value=c(1996,2018), ticks=FALSE, sep="")
+                  ),
+                  
+                  #This selector changes the index year
+                  fluidRow(
+                    selectInput("yearindex", "Index Base Year:", c("No Index (True Values)"="true", 1996:2018), selected="true")
+                  ),
+                  
+                  #Selecting whether to control for U.S. housing prices
+                  fluidRow(
+                    checkboxInput("controlUS", "Control for Overall U.S. Housing Trends", value=F)
+                  ),
+                  
+                  #Selecting whether or not to show the announcement date on the graph
+                  fluidRow(
+                    checkboxInput("corpdata1", "Display Announcement Date", value=T)
+                  ),
+                  
+                  #Selecting whether or not to show the announcement date on the graph
+                  fluidRow(
+                    checkboxInput("corpdata2", "Display Date of Opening", value=T))
+           )
+    ),
+    
+    #Designating the space where our plot will go:
+    column(6, 
+           plotOutput("plot")),
+    
+    #Creating the space for the extra info on the companies
+    column(3, 
+           fluidRow(column(10, p(textOutput("Arlingtontext")))),
+           fluidRow(column(10, p(textOutput("Bostontext")))),
+           fluidRow(column(10, p(textOutput("Chicagotext")))),
+           fluidRow(column(10, p(textOutput("Esterotext")))),
+           fluidRow(column(10, p(textOutput("Planotext"))))
+    )
+  ))
+
+
+# Defining server logic:
+server <- function(input, output) { 
+  
+  output$plot <- renderPlot({ 
+    
+    get(paste0("dat", if(input$controlUS){"adjust"}, input$yearindex))[ifelse(min(input$yearrange)==1996, 1 , (((min(input$yearrange)-1996)*72)-17)) :
+                                                                         ifelse(max(input$yearrange)==1996, 54 , (((max(input$yearrange)-1996)*72)+54)), ] %>%
+      #the line above selects the data set based on what year the user wants to use as the index
+      #the ifelse statements within the brackets then only includes entries that fall into the selected date range
+      
+      filter(City %in% input$cityinput) %>% #using filter to only show the cities selected cities
+      
+      ggplot(aes(x=Date)) + #building the graphic
+      
+      #Adjusting the y-axis label based on the index year
+      labs(y= ifelse(input$yearindex == "true" & !input$controlUS, expression(atop("Zillow Home Value Index", "(thousands of dollars)")), 
+                     ifelse(input$yearindex == "true" & input$controlUS, expression(atop("Zillow Home Value Index","(divided by average U.S. value)")),
+                            ifelse(input$controlUS, expression(atop("Zillow Home Value Index", "(U.S.-adjusted & indexed to selected year)")),
+                                   expression(atop("Zillow Home Value Index", "(indexed to selected year)"))
+                            )
+                     )
+      ),
+      caption = "Note: This visualization alone does not necessarily imply any causal \nrelationships between housing prices and corporate relocations. More \nrigourous econometric analysis is needed to draw such conclusions."
+      ) + 
+      
+      
+      #Making the lines, grouping by City:
+      geom_line(mapping=aes(y=Value, color=City), size = 1) +
+      
+      #Using the previously-made cols vector to manually assign colors
+      scale_color_manual(values = cols, labels = names) +
+      
+      theme(legend.text = element_text(size=13),
+            legend.title = element_text(size=15, face="bold"),
+            axis.title = element_text(size=13),
+            plot.caption = element_text(size=10, hjust=0, vjust=1))
+  })
+  
+  #Adding the paragraph output for info on the GE relocation to Boston
+  output$Bostontext <- renderText({
+    {if(("Boston" %in% input$cityinput))"Information about Boston and GE goes here. This is a test to see what the formatting looks like for the paragraph. This space will have actually useful information in the final version."}
+  })
+  
+  #Adding the paragraph output for info on the Conagra relocation to Chicago
+  output$Chicagotext <- renderText({
+    {if(("Chicago" %in% input$cityinput))"Information about Chicago and Conagra goes here. This is a test to see what the formatting looks like for the paragraph. This space will have actually useful information in the final version."}
+  })
+  
+  #Adding the paragraph output for info on the Nestle relocation to Arlington
+  output$Arlingtontext <- renderText({
+    {if(("Arlington" %in% input$cityinput))"Information about Arlington and Nestle goes here. This is a test to see what the formatting looks like for the paragraph. This space will have actually useful information in the final version."}
+  })
+  
+  #Adding the paragraph output for info on the Toyota relocation to Plano
+  output$Planotext <- renderText({
+    {if(("Plano" %in% input$cityinput))"Information about Plano and Toyota goes here. This is a test to see what the formatting looks like for the paragraph. This space will have actually useful information in the final version."}
+  })
+  
+  #Adding the paragraph output for info on the Hertz relocation to Estero
+  output$Esterotext <- renderText({{if(("Estero" %in% input$cityinput))"Information about Estero and Hertz goes here. This is a test to see what the formatting looks like for the paragraph. This space will have actually useful information in the final version."}
+  })
+}
+
+# Running the app using ui and server (the input and output that we defined)
+shinyApp(ui = ui, server = server) 
