@@ -91,7 +91,8 @@ names <- c("Boston"="Boston, MA", "Chicago"= "Chicago, IL",
 
 # Defining the User Interface:
 
-ui <- fluidPage( 
+ui <- fluidPage(
+  theme = shinytheme("superhero"), # add shinytheme
   titlePanel("Corporate Relocation and Housing Prices"), #The title shown at the top of the app
   
   fluidRow(
