@@ -173,7 +173,6 @@ server <- function(input, output) {
       caption = "Note: This visualization alone does not necessarily imply any causal \nrelationships between housing prices and corporate relocations. More \nrigourous econometric analysis is needed to draw such conclusions."
       ) + 
       
-      
       #Making the lines, grouping by City:
       geom_line(mapping=aes(y=Value, color=City), size = 1) +
       
@@ -183,7 +182,29 @@ server <- function(input, output) {
       theme(legend.text = element_text(size=13),
             legend.title = element_text(size=15, face="bold"),
             axis.title = element_text(size=13),
-            plot.caption = element_text(size=10, hjust=0, vjust=1))
+            plot.caption = element_text(size=10, hjust=0, vjust=1)) +
+                  #Building the Boston/GE line and label in the plot
+            {if(("Boston" %in% input$cityinput) & (input$corpdata1) & (2016 <= max(input$yearrange)) & (2016 >= min(input$yearrange)))
+              geom_vline(xintercept=as.numeric(as.Date("2016-01-13")), colour="orangered3", linetype="dotdash")} +
+      
+      #Making the Chicago/Conagra lines and labels in the plot
+              {if(("Chicago" %in% input$cityinput) & (input$corpdata1) & (2015 <= max(input$yearrange)) & (2015 >= min(input$yearrange)))
+                geom_vline(xintercept=as.numeric(as.Date("2015-10-01")), colour="gold2", linetype="dotdash")} +
+                {if(("Chicago" %in% input$cityinput) & (input$corpdata2) & (2016 <= max(input$yearrange)) & (2016 >= min(input$yearrange)))
+                  geom_vline(xintercept=as.numeric(as.Date("2016-06-01")), colour="gold2", linetype="longdash")} +
+    #Making the Arlington/Nestle lines and labels in the plot
+                  {if(("Arlington" %in% input$cityinput) & (input$corpdata1) & (2017 <= max(input$yearrange)) & (2017 >= min(input$yearrange)))
+                    geom_vline(xintercept=as.numeric(as.Date("2017-01-01")), colour="magenta4", linetype="dotdash")} +
+      #Making the Estero/Hertz lines and labels in the plot
+                    {if(("Estero" %in% input$cityinput) & (input$corpdata1) & (2013 <= max(input$yearrange)) & (2013 >= min(input$yearrange)))
+                      geom_vline(xintercept=as.numeric(as.Date("2013-05-01")), colour="steelblue1", linetype="dotdash")} +
+                      {if(("Estero" %in% input$cityinput) & (input$corpdata2) & (2016 <= max(input$yearrange)) & (2015 >= min(input$yearrange)))
+                        geom_vline(xintercept=as.numeric(as.Date("2016-01-01")), colour="steelblue1", linetype="longdash")} +
+      #Making the Plano/Toyota lines and labels in the plot
+                        {if(("Plano" %in% input$cityinput) & (input$corpdata1) & (2014 <= max(input$yearrange)) & (2014 >= min(input$yearrange)))
+                          geom_vline(xintercept=as.numeric(as.Date("2014-04-01")), colour="dodgerblue4", linetype="dotdash")} +
+                          {if(("Plano" %in% input$cityinput) & (input$corpdata2) & (2017 <= max(input$yearrange)) & (2017 >= min(input$yearrange)))
+                            geom_vline(xintercept=as.numeric(as.Date("2017-07-01")), colour="dodgerblue4", linetype="longdash")} 
   })
   
   #Adding the paragraph output for info on the GE relocation to Boston
@@ -213,3 +234,5 @@ server <- function(input, output) {
 
 # Running the app using ui and server (the input and output that we defined)
 shinyApp(ui = ui, server = server) 
+
+
