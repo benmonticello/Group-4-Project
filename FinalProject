@@ -4,6 +4,7 @@ library(shiny)
 library(httr)
 library(Quandl)
 library(shinythemes)
+library(ggthemes)
 
 #setting the key for the API
 Quandl.api_key("akHYXf6xiWgjt6itcz4X")
@@ -181,6 +182,9 @@ server <- function(input, output) {
       
       #Using the previously-made cols vector to manually assign colors
       scale_color_manual(values = cols, labels = names) +
+      
+      #add ggthemes
+      theme_economist_white() +
       
       theme(legend.text = element_text(size=13),
             legend.title = element_text(size=15, face="bold"),
