@@ -3,6 +3,7 @@ library(rvest)
 library(shiny)
 library(httr)
 library(Quandl)
+library(shinythemes)
 
 #setting the key for the API
 Quandl.api_key("akHYXf6xiWgjt6itcz4X")
@@ -172,6 +173,7 @@ server <- function(input, output) {
       ),
       caption = "Note: This visualization alone does not necessarily imply any causal \nrelationships between housing prices and corporate relocations. More \nrigourous econometric analysis is needed to draw such conclusions."
       ) + 
+      
       
       #Making the lines, grouping by City:
       geom_line(mapping=aes(y=Value, color=City), size = 1) +
