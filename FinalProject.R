@@ -81,7 +81,7 @@ cols <- c("Boston" = "orangered2",
           "Chicago"= "gold2", 
           "Plano"= "green4", 
           "Arlington"="magenta3", 
-          "Estero" = "steelblue1",
+          "Estero" = "steelblue3",
           "US"="black")
 names <- c("Boston"="Boston, MA", "Chicago"= "Chicago, IL", 
            "Plano"= "Plano, TX" , "Arlington" = "Arlington, VA", 
@@ -93,12 +93,12 @@ names <- c("Boston"="Boston, MA", "Chicago"= "Chicago, IL",
 # Defining the User Interface:
 
 ui <- fluidPage(
-  theme = shinytheme("superhero"), # add shinytheme
+  theme = shinytheme("journal"), # add shinytheme
   titlePanel("Corporate Relocation and Housing Prices"), #The title shown at the top of the app
   
   fluidRow(
-    column(3,
-           column(7, 
+    column(2,
+           column(10, 
                   fluidRow(
                     checkboxGroupInput("cityinput", "Housing Markets:", 
                                        c("Boston"="Boston", "Plano"="Plano", 
@@ -141,7 +141,7 @@ ui <- fluidPage(
            plotOutput("plot")),
     
     #Creating the space for the extra info on the companies
-    column(3, 
+    column(4, 
            fluidRow(column(10, p(textOutput("Arlingtontext")))),
            fluidRow(column(10, p(textOutput("Bostontext")))),
            fluidRow(column(10, p(textOutput("Chicagotext")))),
@@ -178,13 +178,13 @@ server <- function(input, output) {
       
       
       #Making the lines, grouping by City:
-      geom_line(mapping=aes(y=Value, color=City), size = 1) +
+      geom_line(mapping=aes(y=Value, color=City), size=0.9, alpha=0.8) +
       
       #Using the previously-made cols vector to manually assign colors
       scale_color_manual(values = cols, labels = names) +
       
       #add ggthemes
-      theme_fivethirtyeight() +
+      theme_economist_white() +
       
       theme(legend.text = element_text(size=13),
             legend.title = element_text(size=15, face="bold"),
@@ -196,59 +196,59 @@ server <- function(input, output) {
           (input$corpdata1) & 
           (2016 <= max(input$yearrange)) & 
           (2016 >= min(input$yearrange)))
-        geom_vline(xintercept=as.numeric(as.Date("2016-01-13")), colour="orangered3")} +
+        geom_vline(xintercept=as.numeric(as.Date("2016-01-13")), colour="orangered2", size=0.75, alpha=0.8)} +
       
       #Making the Chicago/Conagra lines and labels in the plot
       {if(("Chicago" %in% input$cityinput) & 
           (input$corpdata1) & 
           (2015 <= max(input$yearrange)) & 
           (2015 >= min(input$yearrange)))
-        geom_vline(xintercept=as.numeric(as.Date("2015-10-01")), colour="gold2")} +
+        geom_vline(xintercept=as.numeric(as.Date("2015-10-01")), colour="gold2", size=0.75, alpha=0.8)} +
       
       {if(("Chicago" %in% input$cityinput) & 
           (input$corpdata2) & 
           (2016 <= max(input$yearrange)) & 
           (2016 >= min(input$yearrange)))
-        geom_vline(xintercept=as.numeric(as.Date("2016-06-01")), colour="gold2")} +
+        geom_vline(xintercept=as.numeric(as.Date("2016-06-01")), colour="gold2", size=0.75, alpha=0.8)} +
       
       #Making the Arlington/Nestle lines and labels in the plot
       {if(("Arlington" %in% input$cityinput) & 
           (input$corpdata1) & 
           (2017 <= max(input$yearrange)) & 
           (2017 >= min(input$yearrange)))
-        geom_vline(xintercept=as.numeric(as.Date("2017-01-01")), colour="magenta4")} +
+        geom_vline(xintercept=as.numeric(as.Date("2017-01-01")), colour="magenta3", size=0.75, alpha=0.8)} +
       
       {if(("Arlington" %in% input$cityinput) & 
           (input$corpdata2) & 
           (2018 <= max(input$yearrange)) & 
           (2018 >= min(input$yearrange)))
-        geom_vline(xintercept=as.numeric(as.Date("2018-07-31")), colour="magenta4")} +
+        geom_vline(xintercept=as.numeric(as.Date("2018-07-31")), colour="magenta3", size=0.75, alpha=0.8)} +
       
       #Making the Estero/Hertz lines and labels in the plot
       {if(("Estero" %in% input$cityinput) & 
           (input$corpdata1) & 
           (2013 <= max(input$yearrange)) & 
           (2013 >= min(input$yearrange)))
-        geom_vline(xintercept=as.numeric(as.Date("2013-05-01")), colour="steelblue1")} +
+        geom_vline(xintercept=as.numeric(as.Date("2013-05-01")), colour="steelblue3", size=0.75, alpha=0.8)} +
                       
       {if(("Estero" %in% input$cityinput) & 
           (input$corpdata2) & 
           (2016 <= max(input$yearrange)) & 
           (2015 >= min(input$yearrange)))
-        geom_vline(xintercept=as.numeric(as.Date("2016-01-01")), colour="steelblue1")} +
+        geom_vline(xintercept=as.numeric(as.Date("2016-01-01")), colour="steelblue3", size=0.75, alpha=0.8)} +
       
       #Making the Plano/Toyota lines and labels in the plot
       {if(("Plano" %in% input$cityinput) & 
           (input$corpdata1) & 
           (2014 <= max(input$yearrange)) & 
           (2014 >= min(input$yearrange)))
-        geom_vline(xintercept=as.numeric(as.Date("2014-04-01")), colour="green4")} +
+        geom_vline(xintercept=as.numeric(as.Date("2014-04-01")), colour="green4", size=0.75, alpha=0.8)} +
       
       {if(("Plano" %in% input$cityinput) & 
           (input$corpdata2) & 
           (2017 <= max(input$yearrange)) & 
           (2017 >= min(input$yearrange)))
-        geom_vline(xintercept=as.numeric(as.Date("2017-07-01")), colour="green4")} 
+        geom_vline(xintercept=as.numeric(as.Date("2017-07-01")), colour="green4", size=0.75, alpha=0.8)} 
   })
   
   #Adding the paragraph output for info on the GE relocation to Boston
@@ -258,21 +258,21 @@ server <- function(input, output) {
   
   #Adding the paragraph output for info on the Conagra relocation to Chicago
   output$Chicagotext <- renderText({
-    {if(("Chicago" %in% input$cityinput))"Information about Chicago and Conagra goes here. This is a test to see what the formatting looks like for the paragraph. This space will have actually useful information in the final version."}
+    {if(("Chicago" %in% input$cityinput))"ConAgra, maker of food brands like Slim Jim and Chef Boyardee, announced its relocation to Chicago in 2015. It's new location opened in 2016 and is home to 800 jobs."}
   })
   
   #Adding the paragraph output for info on the Nestle relocation to Arlington
   output$Arlingtontext <- renderText({
-    {if(("Arlington" %in% input$cityinput))"Nestle USA announced its move to Arlington in February 2017. The new headquarters brought roughly 900 new jobs and opened in July of 2018"}
+    {if(("Arlington" %in% input$cityinput))"Nestle USA announced its move to Arlington in February 2017. The new headquarters brought roughly 900 new jobs and opened in July of 2018."}
   })
   
   #Adding the paragraph output for info on the Toyota relocation to Plano
   output$Planotext <- renderText({
-    {if(("Plano" %in% input$cityinput))"Information about Plano and Toyota goes here. This is a test to see what the formatting looks like for the paragraph. This space will have actually useful information in the final version."}
+    {if(("Plano" %in% input$cityinput))"Toyota announced its move to Plano, Texas in 2014. The move, which brought 4,000 jobs to the city, opened in 2017."}
   })
   
   #Adding the paragraph output for info on the Hertz relocation to Estero
-  output$Esterotext <- renderText({{if(("Estero" %in% input$cityinput))"Information about Estero and Hertz goes here. This is a test to see what the formatting looks like for the paragraph. This space will have actually useful information in the final version."}
+  output$Esterotext <- renderText({{if(("Estero" %in% input$cityinput))"In 2013, Hertz announced the development of a new headquarters in Estero, Florida. The develoment cost $50 million, brought in more than 700 jobs, and opened in 2016."}
   })
 }
 
