@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1556383879362.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "E4A6E7CC",
+    "lastKnownWriteTime" : 1556384183,
+    "last_content_update" : 1556384183739,
+    "path" : "F:/R workshop/PPOL670-Group-4-Project/First Test.R",
+    "project_path" : "First Test.R",
+    "properties" : {
+        "cursorPosition" : "14,37",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

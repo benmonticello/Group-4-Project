@@ -1,0 +1,40 @@
+---
+title: "Corperate Relocation and Housing Values"
+theme: "Frankfurt"
+colortheme: "crane"
+output: beamer_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Background
+
+![Amazon's headquarter in Seattle](picture/amazon.jpg)
+
+## Background
+![Amazon's headquarter in Seattle](picture/House_price.jpg)
+
+## Problem Statement
+
+## Approach
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+## Methods
+
+```{r cars, echo = TRUE}
+summary(cars)
+```
+
+## Results
+
+## Lessons Learned
+
+```{r pressure}
+plot(pressure)
+```
+
