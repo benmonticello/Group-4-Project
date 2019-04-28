@@ -258,7 +258,7 @@ server <- function(input, output) {
   
   #Adding the paragraph output for info on the Conagra relocation to Chicago
   output$Chicagotext <- renderText({
-    {if(("Chicago" %in% input$cityinput))"ConAgra, maker of food brands like Slim Jim and Chef Boyardee, announced its relocation to Chicago in 2015. It's new location opened in 2016 and is home to 800 jobs."}
+    {if(("Chicago" %in% input$cityinput))"ConAgra, maker of food brands like Slim Jim and Chef Boyardee, announced its relocation to Chicago in 2015. Its new location opened in 2016 and is home to 800 jobs."}
   })
   
   #Adding the paragraph output for info on the Nestle relocation to Arlington
