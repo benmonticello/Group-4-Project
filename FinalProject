@@ -79,7 +79,7 @@ for(i in 1996:2018){
 #creating a vector to manually assign colors later in the visualization 
 cols <- c("Boston" = "orangered2", 
           "Chicago"= "gold2", 
-          "Plano"= "dodgerblue3", 
+          "Plano"= "green4", 
           "Arlington"="magenta3", 
           "Estero" = "steelblue1",
           "US"="black")
@@ -122,17 +122,17 @@ ui <- fluidPage(
                   
                   #Selecting whether to control for U.S. housing prices
                   fluidRow(
-                    checkboxInput("controlUS", "Control for Overall U.S. Housing Trends", value=F)
+                    checkboxInput("controlUS", "Control for Overall U.S. Housing Trends", value=FALSE)
                   ),
                   
                   #Selecting whether or not to show the announcement date on the graph
                   fluidRow(
-                    checkboxInput("corpdata1", "Display Announcement Date", value=T)
+                    checkboxInput("corpdata1", "Display Announcement Date", value=TRUE)
                   ),
                   
                   #Selecting whether or not to show the announcement date on the graph
                   fluidRow(
-                    checkboxInput("corpdata2", "Display Date of Opening", value=T))
+                    checkboxInput("corpdata2", "Display Date of Opening", value=FALSE))
            )
     ),
     
@@ -184,39 +184,76 @@ server <- function(input, output) {
       scale_color_manual(values = cols, labels = names) +
       
       #add ggthemes
-      theme_economist_white() +
+      theme_fivethirtyeight() +
       
       theme(legend.text = element_text(size=13),
             legend.title = element_text(size=15, face="bold"),
             axis.title = element_text(size=13),
             plot.caption = element_text(size=10, hjust=0, vjust=1)) +
-                  #Building the Boston/GE line and label in the plot
-            {if(("Boston" %in% input$cityinput) & (input$corpdata1) & (2016 <= max(input$yearrange)) & (2016 >= min(input$yearrange)))
-              geom_vline(xintercept=as.numeric(as.Date("2016-01-13")), colour="orangered3", linetype="dotdash")} +
+      
+      #Building the Boston/GE line and label in the plot
+      {if(("Boston" %in% input$cityinput) & 
+          (input$corpdata1) & 
+          (2016 <= max(input$yearrange)) & 
+          (2016 >= min(input$yearrange)))
+        geom_vline(xintercept=as.numeric(as.Date("2016-01-13")), colour="orangered3")} +
       
       #Making the Chicago/Conagra lines and labels in the plot
-              {if(("Chicago" %in% input$cityinput) & (input$corpdata1) & (2015 <= max(input$yearrange)) & (2015 >= min(input$yearrange)))
-                geom_vline(xintercept=as.numeric(as.Date("2015-10-01")), colour="gold2", linetype="dotdash")} +
-                {if(("Chicago" %in% input$cityinput) & (input$corpdata2) & (2016 <= max(input$yearrange)) & (2016 >= min(input$yearrange)))
-                  geom_vline(xintercept=as.numeric(as.Date("2016-06-01")), colour="gold2", linetype="longdash")} +
-    #Making the Arlington/Nestle lines and labels in the plot
-                  {if(("Arlington" %in% input$cityinput) & (input$corpdata1) & (2017 <= max(input$yearrange)) & (2017 >= min(input$yearrange)))
-                    geom_vline(xintercept=as.numeric(as.Date("2017-01-01")), colour="magenta4", linetype="dotdash")} +
+      {if(("Chicago" %in% input$cityinput) & 
+          (input$corpdata1) & 
+          (2015 <= max(input$yearrange)) & 
+          (2015 >= min(input$yearrange)))
+        geom_vline(xintercept=as.numeric(as.Date("2015-10-01")), colour="gold2")} +
+      
+      {if(("Chicago" %in% input$cityinput) & 
+          (input$corpdata2) & 
+          (2016 <= max(input$yearrange)) & 
+          (2016 >= min(input$yearrange)))
+        geom_vline(xintercept=as.numeric(as.Date("2016-06-01")), colour="gold2")} +
+      
+      #Making the Arlington/Nestle lines and labels in the plot
+      {if(("Arlington" %in% input$cityinput) & 
+          (input$corpdata1) & 
+          (2017 <= max(input$yearrange)) & 
+          (2017 >= min(input$yearrange)))
+        geom_vline(xintercept=as.numeric(as.Date("2017-01-01")), colour="magenta4")} +
+      
+      {if(("Arlington" %in% input$cityinput) & 
+          (input$corpdata2) & 
+          (2018 <= max(input$yearrange)) & 
+          (2018 >= min(input$yearrange)))
+        geom_vline(xintercept=as.numeric(as.Date("2018-07-31")), colour="magenta4")} +
+      
       #Making the Estero/Hertz lines and labels in the plot
-                    {if(("Estero" %in% input$cityinput) & (input$corpdata1) & (2013 <= max(input$yearrange)) & (2013 >= min(input$yearrange)))
-                      geom_vline(xintercept=as.numeric(as.Date("2013-05-01")), colour="steelblue1", linetype="dotdash")} +
-                      {if(("Estero" %in% input$cityinput) & (input$corpdata2) & (2016 <= max(input$yearrange)) & (2015 >= min(input$yearrange)))
-                        geom_vline(xintercept=as.numeric(as.Date("2016-01-01")), colour="steelblue1", linetype="longdash")} +
+      {if(("Estero" %in% input$cityinput) & 
+          (input$corpdata1) & 
+          (2013 <= max(input$yearrange)) & 
+          (2013 >= min(input$yearrange)))
+        geom_vline(xintercept=as.numeric(as.Date("2013-05-01")), colour="steelblue1")} +
+                      
+      {if(("Estero" %in% input$cityinput) & 
+          (input$corpdata2) & 
+          (2016 <= max(input$yearrange)) & 
+          (2015 >= min(input$yearrange)))
+        geom_vline(xintercept=as.numeric(as.Date("2016-01-01")), colour="steelblue1")} +
+      
       #Making the Plano/Toyota lines and labels in the plot
-                        {if(("Plano" %in% input$cityinput) & (input$corpdata1) & (2014 <= max(input$yearrange)) & (2014 >= min(input$yearrange)))
-                          geom_vline(xintercept=as.numeric(as.Date("2014-04-01")), colour="dodgerblue4", linetype="dotdash")} +
-                          {if(("Plano" %in% input$cityinput) & (input$corpdata2) & (2017 <= max(input$yearrange)) & (2017 >= min(input$yearrange)))
-                            geom_vline(xintercept=as.numeric(as.Date("2017-07-01")), colour="dodgerblue4", linetype="longdash")} 
+      {if(("Plano" %in% input$cityinput) & 
+          (input$corpdata1) & 
+          (2014 <= max(input$yearrange)) & 
+          (2014 >= min(input$yearrange)))
+        geom_vline(xintercept=as.numeric(as.Date("2014-04-01")), colour="green4")} +
+      
+      {if(("Plano" %in% input$cityinput) & 
+          (input$corpdata2) & 
+          (2017 <= max(input$yearrange)) & 
+          (2017 >= min(input$yearrange)))
+        geom_vline(xintercept=as.numeric(as.Date("2017-07-01")), colour="green4")} 
   })
   
   #Adding the paragraph output for info on the GE relocation to Boston
   output$Bostontext <- renderText({
-    {if(("Boston" %in% input$cityinput))"Information about Boston and GE goes here. This is a test to see what the formatting looks like for the paragraph. This space will have actually useful information in the final version."}
+    {if(("Boston" %in% input$cityinput))"On January 13, 2016, GE announced its move from Connecticut to Boston. The $150 million development planned to host more than 1,000 jobs, but after financial woes, GE cancelled its Boston move in early 2019."}
   })
   
   #Adding the paragraph output for info on the Conagra relocation to Chicago
@@ -226,7 +263,7 @@ server <- function(input, output) {
   
   #Adding the paragraph output for info on the Nestle relocation to Arlington
   output$Arlingtontext <- renderText({
-    {if(("Arlington" %in% input$cityinput))"Information about Arlington and Nestle goes here. This is a test to see what the formatting looks like for the paragraph. This space will have actually useful information in the final version."}
+    {if(("Arlington" %in% input$cityinput))"Nestle USA announced its move to Arlington in February 2017. The new headquarters brought roughly 900 new jobs and opened in July of 2018"}
   })
   
   #Adding the paragraph output for info on the Toyota relocation to Plano
@@ -241,5 +278,5 @@ server <- function(input, output) {
 
 # Running the app using ui and server (the input and output that we defined)
 shinyApp(ui = ui, server = server) 
-
+runapp()
 
