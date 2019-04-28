@@ -48,7 +48,7 @@ Successfully created a tool that gives users the ability to examine the relation
 
 (1)All selected cities have higher median housing values in true value than the U.S. average - with Chicago, IL  nearest to the U.S. average and Arlington, VA with the greatest difference from the average value.
 
-                                         (can add graph)
+                                        
 
 ## Results
 
@@ -56,7 +56,7 @@ Successfully created a tool that gives users the ability to examine the relation
 
 (3)Many cities across the U.S. are compounded with the opportunities of an expanding labor market but challenged with a housing market that’s becoming less accessible for those seeking opportunities. 
 
-                                          (can add graph)
+                                      
 
 ## Lessons Learned/Next step
 
