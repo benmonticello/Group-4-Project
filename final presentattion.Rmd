@@ -4,7 +4,7 @@ author: |
         Benjamin Monticello
         | Fangwen Zhang
         | Humera Durrani
-date: April 28, 2019
+date: April 29, 2019
 theme: "Frankfurt"
 colortheme: "crane"
 output: beamer_presentation
@@ -39,26 +39,31 @@ Data visualization: Shiny
 Aim:give users a tool to analyze trends relating to corporate moves and make that conclusion for themselves.
 
 Methods:
+
 - API (Quandl)
+
 - Shiny (interactive visualization)
 
 ## Results
 
 Successfully created a tool that gives users the ability to examine the relationship between the corporate relocations and housing value trends.
 
-(1)All selected cities have higher median housing values in true value than the U.S. average - with Chicago, IL  nearest to the U.S. average and Arlington, VA with the greatest difference from the average value.
-
-                                        
+[ProjectApp](https://ben-monticello.shinyapps.io/ProjectApp/)
+![Graph 4](picture/graph4.jpg)
 
 ## Results
+(1)All selected cities have higher median housing values in true value than the U.S. average - with Chicago, IL  nearest to the U.S. average and Arlington, VA with the greatest difference from the average value.
+![Graph 1](picture/graph1.jpg)
 
-(2)Regional housing value stays consistent in its market trajectory regardless of corporate relocations with cities like Boston and Plano largely moving in an upward direction and Arlington and Chicago and Estero for the most part moving in a negative direction. 
 
+## Results
+(2)Regional housing value stays consistent in its market trajectory regardless of corporate relocations with cities like Boston and Plano largely moving in an upward direction and Arlington and Chicago and Estero for the most part moving in a negative direction.
+![Graph 3](picture/graph3.jpg)
+
+## Results
 (3)Many cities across the U.S. are compounded with the opportunities of an expanding labor market but challenged with a housing market that’s becoming less accessible for those seeking opportunities. 
 
                                       
-
-## Lessons Learned/Next step
 
 
 
