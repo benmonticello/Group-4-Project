@@ -1,5 +1,5 @@
 ---
-title: "Corperate Relocation and Housing Values"
+title: "Corporate Relocation and Housing Values"
 author: | 
         Benjamin Monticello
         | Fangwen Zhang
@@ -43,6 +43,8 @@ Methods:
 - Shiny (interactive visualization)
 
 ## Results
+
+[Link to final app!](https://ben-monticello.shinyapps.io/ProjectApp/)
 
 Successfully created a tool that gives users the ability to examine the relationship between the corporate relocations and housing value trends.
 

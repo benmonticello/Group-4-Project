@@ -1,53 +1,191 @@
 ---
-title: "Corperate Relocation and Housing Values"
-author: | 
-        Benjamin Monticello
-        | Fangwen Zhang
-        | Humera Durrani
-date: April 29, 2019
-theme: "Frankfurt"
+title: "Corporate Relocation and Housing Values"
+author: |
+  Benjamin Monticello
+  | Fangwen Zhang
+  | Humera Durrani
+date: "April 29, 2019"
 output: pdf_document
 ---
-Problem Statement and Background
-In the age of the technological boom and rapid urbanization, cities have become the focal point of interest for corporations and job-seekers alike. As corporations, especially those with a large brand following, move into cities and people are drawn to localities for work, the housing market will naturally respond. Given the national attention surrounding Amazon’s HQ2 move to New York, excitement has been coupled with the fear of exacerbating a housing market crisis marked by intense housing shortages and unaffordability. While Amazon’s new corporate addition is unprecedent, large relocations of corporations to new cities (often those with pre-existing tight housing markets) is not a new phenomenon. Our purpose is to examine how the announcement of a major corporate relocation and the completion of such developments may have impacted the housing value of individual localities. We believe that both the announcement of a corporate headquarter relocation and the opening of the new development will result in a noticeable increase in local housing prices.  
-Research Design and Approach
+## Problem Statement and Background
+
+
+In the age of the technological boom and rapid urbanization, cities have become the focal point of interest for corporations and job-seekers alike. As corporations, especially those with a large brand following, move into cities and people are drawn to localities for work, the housing market will naturally respond. Given the national attention surrounding Amazon’s HQ2 move to New York, excitement has been coupled with the fear of exacerbating a housing market crisis marked by intense housing shortages and unaffordability. While Amazon’s new corporate addition is unprecedent, large relocations of corporations to new cities (often those with pre-existing tight housing markets) is not a new phenomenon. Our purpose is to examine how the announcement of a major corporate relocation and the completion of such developments may have impacted the housing value of individual localities. We believe that both the announcement of a corporate headquarter relocation and the opening of the new development will result in a noticeable increase in local housing prices.
+
+
+## Research Design and Approach
 	
 Our primary unit of analysis is the housing value before and after speculation of a company move to a particular city. In order to understand the housing market landscape across U.S. localities, we initially examined median housing value data from two leading online platform for real estate and rental marketplace including Zillow.com and Trulia.com. While both provided ample housing value data and market trend information, we narrowed our primary data source to Zillow given its accessibility to large amounts of housing data and API capability. 
 	Our second step was to identify 3-5 companies that are relevant for our work including: identifying the date of the rumors regarding company moves that fell within the timeframe provided by the Zillow dataset (from 1996 to 2018), selecting companies that have located to different metropolitan areas (to avoid overlap and endogeneity), and selecting large companies that are widely-recognizable and whose presence could possibly affect the market. We defined large companies as those with more than 1,000 employees and those that were expected to generate 500 or more new jobs to the locality.  By researching companies that met this criteria, we identified General Electric (move to Boston, Massachusetts), Conagra Food (move to Chicago, Illinois), Nestle USA (move to Arlington, Virginia), The Hertz Corporation (move to Estero, Florida) and Toyota (move to Plano, Texas) as companies of interest. The goal was to compare the median housing value trajectory before and after a corporate announcement – which creates speculation in the housing market and before and after the actual corporate move – which would bring in hundreds of new jobs and tighten the housing market.
 
-Methods & Tools 
+## Methods & Tools 
 
 We believe that showing “causality” of corporate relocations and potentially increased housing values was beyond the scope of our work given the intricate complexities of increasing housing values in major cities around the U.S. However, we felt that we can give users a visual tool to analyze trends relating to corporate moves and better inform their views. We created this tool with a 3-step approach: use an API to scrape housing value data from Zillow, extract, clean, and manipulate all relevant data for cities of interest, and visualize the data through an interactive platform, Shiny.
-By exploring different API options, we discovered a third-party site Quandl. Quandl is a service designed to improve accessibility to a variety of data sources including our primary source of interest: Zillow’s Home Value Index. After importing the data through the API, we wrangled and manipulated it using the dplyr package to put our data into a usable structure.
+By exploring different API options, we discovered a third-party site Quandl. Quandl is a service designed to improve accessibility to a variety of data sources including our primary source of interest: Zillow’s Home Value Index. After importing the data through the API, we wrangled and manipulated it using the dplyr package to put our data into a usable structure. Since each individual housing market was imported as a separate dataframe, we then merged everything into one clean tibble. Below we can see the tible of our basic data - before putting it into long form using gather().
 
-```{r}
+```{r echo=FALSE, results="hide", warning=FALSE, message=FALSE}
+library(tidyverse)
+library(rvest)
+library(shiny)
+library(httr)
+library(Quandl)
+library(shinythemes)
+library(ggthemes)
+```
+
+```{r cache=TRUE, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
+#setting the key for the API
+Quandl.api_key("akHYXf6xiWgjt6itcz4X")
+
+planodat <- as_tibble(Quandl("ZILLOW/C72_ZHVIAH")) %>% select(Date, "Plano"=Value)
+bostondat <- as_tibble(Quandl("ZILLOW/C22_ZHVIAH")) %>% select(Date, "Boston"=Value)
+chicagodat <- as_tibble(Quandl("ZILLOW/C3_ZHVIAH")) %>% select(Date, "Chicago"=Value)
+esterodat <- as_tibble(Quandl("ZILLOW/C2246_ZHVIAH")) %>% select(Date, "Estero"=Value)
+usdat <- as_tibble(Quandl("ZILLOW/M1_ZHVIAH")) %>% select(Date, "US"=Value)
+arlingtondat <- as_tibble(Quandl("ZILLOW/CO3401_ZHVIAH")) %>% select(Date, "Arlington" =Value)
+
+
+dat1 <- full_join(planodat, bostondat, by=c("Date"))
+dat2 <- full_join(chicagodat, esterodat, by=c("Date"))
+dat3 <- full_join(usdat, arlingtondat, by=c("Date"))
+dat4<- full_join(dat1, dat2, by=c("Date"))
+dat <- full_join(dat4, dat3, by=c("Date")) %>% arrange(Date)
+dat
+
+dat <- cbind(dat[,1], (dat[,-1]/1000))
+
+#Using a loop to build separate tibbles for each indexed year
+
+for(i in 1996:2018){
+  x <- ifelse(i==1996, 1, ((i-1996)*12)-2)
+  
+  dat %>%
+    mutate(Plano = Plano/Plano[x],
+           Boston = Boston/Boston[x],
+           Chicago = Chicago/Chicago[x],
+           Estero = Estero/Estero[x],
+           US = US/US[x],
+           Arlington = Arlington/Arlington[x]) %>%
+    gather(key="City", value="Value", Boston, Chicago, Arlington, Estero, Plano, US) %>%
+    arrange(., Date) %>%
+    assign(paste0("dat", i), ., envir = .GlobalEnv)
+}
+
+#also using the gather function for the non-indexed data
+dattrue <- dat %>%
+  gather(key="City", value="Value", Boston, Chicago, Arlington, Estero, Plano, US) %>%
+  arrange(Date)
+
+#Creating the U.S.-adjusted data
+datadjust <- dat %>% mutate(Plano = Plano/US,
+                            Boston = Boston/US,
+                            Chicago = Chicago/US,
+                            Estero = Estero/US,
+                            Arlington = Arlington/US,
+                            US=US/US) %>%
+  select(Date, Arlington, Boston, Chicago, Estero, Plano, US) 
+
+datadjusttrue <-datadjust %>% gather(key="City", value="Value", Boston, Chicago, Arlington, Estero, Plano, US) %>%
+  arrange(., Date)
+
+#Creating the tibbles for each year for hte U.S.-adjusted data
+for(i in 1996:2018){
+  x <- ifelse(i==1996, 1, ((i-1996)*12)-2)
+  
+  datadjust %>%
+    mutate(Plano = Plano/Plano[x],
+           Boston = Boston/Boston[x],
+           Chicago = Chicago/Chicago[x],
+           Estero = Estero/Estero[x],
+           Arlington = Arlington/Arlington[x],
+           US=US/US[x]) %>%
+    gather(key="City", value="Value", Boston, Chicago, Arlington, Estero, Plano, US) %>%
+    arrange(., Date) %>%
+    assign(paste0("datadjust", i), ., envir = .GlobalEnv)
+}
+
+#creating a vector to manually assign colors later in the visualization 
+cols <- c("Boston" = "orangered2", 
+          "Chicago"= "gold2", 
+          "Plano"= "green4", 
+          "Arlington"="magenta3", 
+          "Estero" = "steelblue3",
+          "US"="black")
+names <- c("Boston"="Boston, MA", "Chicago"= "Chicago, IL", 
+           "Plano"= "Plano, TX" , "Arlington" = "Arlington, VA", 
+           "Estero"= "Estero, FL", "US"= "U.S. Average")
+```
+```{r echo=FALSE}
+head(dat)
+```
+
+
+Furthermore, we utilized multiple for-loops to create new tibbles for each indexed year and controlled for the overall U.S. housing market trend. 
+
+
+Since the fundamental purpose of our project was to create an interactive visualization to allow people that are curious about this issue to more easily view the data, we used Shiny to add this interactivity. One of the ways we made the visualization interactive is by adding a  “checkboxgroupinput” option where users can simply click on which housing markets they want to see visualized and used the filter() function to only include the markets that have been selected in the visualization. We also gave user the ability to select the range of years that are included on the visualization – essentially allowing them to ‘zoom in’ on a certain time period. We used the years selected to select a specific range of rows that fall within that date. We can see the 'basic' version of our visualization below. This is how the visualization would appear if the user chose to view every city over the entire date range (1996 to 2018):
+
+```{r echo=FALSE, warning=FALSE, message=FALSE, fig.width=10}
+dattrue %>% 
+  ggplot(aes(x=Date)) + 
+      labs(y= expression(atop("Zillow Home Value Index", "(thousands of dollars)")),
+      caption = "Note: This visualization alone does not necessarily imply any causal \nrelationships between housing prices and corporate relocations. More \nrigourous econometric analysis is needed to draw such conclusions.") + 
+      geom_line(mapping=aes(y=Value, color=City), size=0.9, alpha=0.8) +
+      scale_color_manual(values = cols, labels = names) +
+      theme_economist_white() +
+      theme(legend.text = element_text(size=13),
+            legend.title = element_text(size=15, face="bold"),
+            axis.title = element_text(size=13),
+            plot.caption = element_text(size=10, hjust=0, vjust=1))
 
 ```
-Since each individual housing market was imported as a separate dataframe, we then merged everything into one clean tibble. Furthermore, we utilized multiple for-loops to create new tibbles for each indexed year and controlled for the overall U.S. housing market trend.
-Since the fundamental purpose of our project was to create an interactive visualization to allow people that are curious about this issue to more easily view the data, we used Shiny to add this interactivity. One of the ways we made the visualization interactive is by adding a  “checkboxgroupinput” option where users can simply click on which housing markets they want to see visualized and used the filter() function to only include the markets that have been selected in the visualization. 
-```{r}
+
+
+Additionally, users can choose to view the true value of the data (in thousands of dollars), or have every line indexed to a given year from 1996 to 2018. Doing this would set the base value for the selected year to 1, so instead of a dollar value, the y-axis would display the percentage change in home value for every market since the selected year. We also gave users the option to ‘control’ for overall U.S. housing trends. We accomplished this by dividing each market’s value for any given date by the value of the U.S. average. Our intent in offering this option was to more clearly show the differences between the local markets, unaffected by larger trends in the U.S. housing market – most notably the 2007 housing crash. We can see the effect of this adjustment below:
+
+
+```{r echo=FALSE, warning=FALSE, message=FALSE, fig.width=10}
+datadjusttrue %>% 
+  ggplot(aes(x=Date)) + 
+      labs(y= expression(atop("Zillow Home Value Index", "(divided by average U.S. value)")),
+      caption = "Note: This visualization alone does not necessarily imply any causal \nrelationships between housing prices and corporate relocations. More \nrigourous econometric analysis is needed to draw such conclusions.") + 
+      geom_line(mapping=aes(y=Value, color=City), size=0.9, alpha=0.8) +
+      scale_color_manual(values = cols, labels = names) +
+      theme_economist_white() +
+      theme(legend.text = element_text(size=13),
+            legend.title = element_text(size=15, face="bold"),
+            axis.title = element_text(size=13),
+            plot.caption = element_text(size=10, hjust=0, vjust=1))
 
 ```
-We also gave user the ability to select the range of years that are included on the visualization – essentially allowing them to ‘zoom in’ on a certain time period. We used the years selected to select a specific range of rows that fall within that date. Additionally, users can choose to view the true value of the data (in thousands of dollars), or have every line indexed to a given year from 1996 to 2018. 
-```{r}
+
+Finally, we gave users control over whether or not to show the vertical lines that indicate dates in which companies announced a headquarters relocation and the date in which the new headquarters opened. This addition was made so that the users could choose to see a cleaner visualization with just the housing market trends and was accomplished with simple conditional statements before adding the geom_vline. The figure below shows true values with the dates that companies announced their relocation displayed.
+
+```{r echo=FALSE, warning=FALSE, message=FALSE, fig.width=10}
+dattrue %>% 
+  ggplot(aes(x=Date)) + 
+      labs(y= expression(atop("Zillow Home Value Index", "(thousands of dollars)")),
+      caption = "Note: This visualization alone does not necessarily imply any causal \nrelationships between housing prices and corporate relocations. More \nrigourous econometric analysis is needed to draw such conclusions.") + 
+      geom_line(mapping=aes(y=Value, color=City), size=0.9, alpha=0.8) +
+      scale_color_manual(values = cols, labels = names) +
+      theme_economist_white() +
+      theme(legend.text = element_text(size=13),
+            legend.title = element_text(size=15, face="bold"),
+            axis.title = element_text(size=13),
+            plot.caption = element_text(size=10, hjust=0, vjust=1)) +
+  geom_vline(xintercept=as.numeric(as.Date("2016-01-13")), colour="orangered2", size=0.75, alpha=0.8) +
+        geom_vline(xintercept=as.numeric(as.Date("2015-10-01")), colour="gold2", size=0.75, alpha=0.8) +
+  geom_vline(xintercept=as.numeric(as.Date("2017-01-01")), colour="magenta3", size=0.75, alpha=0.8) +
+  geom_vline(xintercept=as.numeric(as.Date("2013-05-01")), colour="steelblue3", size=0.75, alpha=0.8) +
+        geom_vline(xintercept=as.numeric(as.Date("2014-04-01")), colour="green4", size=0.75, alpha=0.8)
 
 ```
-Doing this would set the base value for the selected year to 1, so instead of a dollar value, the y-axis would display the percentage change in home value for every market since the selected year. We also gave users the option to ‘control’ for overall U.S. housing trends. We accomplished this by dividing each market’s value for any given date by the value of the U.S. average. 
-```{r}
 
-```
-Our intent in offering this option was to more clearly show the differences between the local markets, unaffected by larger trends in the U.S. housing market – most notably the 2007 housing crash. Finally, we gave users control over whether or not to show the vertical lines that indicate dates in which companies announced a headquarters relocation and the date in which the new headquarters opened. 
-```{r}
 
-```
-This addition was made so that the users could choose to see a cleaner visualization with just the housing market trends and was accomplished with simple conditional statements before adding the geom_vline. 
+## Results & Discussion
 
-Results & Discussion
+Our final app can be found by following [this link](https://ben-monticello.shinyapps.io/ProjectApp/)
 
 By creating an interactive visualization that displays key corporate relocations and housing value trends in the respective locality, we have successfully created a tool that gives users the ability to examine the relationship between the two variables. The clearest limitation is that the graph does not determine causality given the lack of information on the numerous factors that affect housing values in a locality and therefore, its lack of control of endogeneity makes any conclusions on the impact of corporate relocation nearly impossible. However, the graph does clearly display market trends of housing values during the time period of the selected corporate relocation. The visualization also displays the fact that all selected cities have higher median housing values in true value than the U.S. average - with Chicago, IL  nearest to the U.S. average and Arlington, VA with the greatest difference from the average value. For the majority of the housing markets, the visualization shows that regional housing value stays consistent in its market trajectory regardless of corporate relocations with cities like Boston and Plano largely moving in an upward direction and Arlington and Chicago and Estero for the most part moving in a negative direction. This finding is unsurprising given that these are cities with significant economic activity and many other reasons for a tightening housing market – meaning any singular corporate move will have minimal impact that is difficult to measure or visualize on a graph. However, this project does prove that many cities across the U.S. are compounded with the opportunities of an expanding labor market but challenged with a housing market that’s becoming less accessible for those seeking opportunities. 
-```{r}
 
 
-
-```
-```
